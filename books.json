@@ -1,1 +1,23 @@
 
+[
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A novel set in the Jazz Age that explores wealth, love, and the American Dream.",
+    "genre": "Fiction",
+    "ageRating": "16+",
+    "totalCopies": 10,
+    "availableCopies": 4,
+    "cover": "covers/gatsby.jpg"
+  },
+  {
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "description": "A story of racial injustice and childhood innocence in the Deep South.",
+    "genre": "Fiction",
+    "ageRating": "12+",
+    "totalCopies": 8,
+    "availableCopies": 2,
+    "cover": "covers/mockingbird.jpg"
+  }
+]
