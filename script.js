@@ -1,85 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rainbow of Hope Library</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
+document.addEventListener("DOMContentLoaded", () => {
+    const bookList = document.getElementById("book-list");
+    const searchInput = document.getElementById("search");
+    const genreFilter = document.getElementById("genre-filter");
+    const ageFilter = document.getElementById("age-filter");
+    const pagination = document.getElementById("pagination");
 
-<body>
-  <!--Hero Section-->
-  <header class="hero">
-    <nav class="navbar">
-      <div class="logo">
-        <h1>Rainbow of Hope: 5C Project</h1>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Library</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </nav>
+    let books = [];
+    let filteredBooks = [];
+    let currentPage = 1;
+    const booksPerPage = 12;
 
-    <section class="hero-content">
-      <h2>Library</h2>
-      <p>Explore books at your own pace, wherever you are.</p>
-      <a href="#library" class="btn">Browse Books</a>
-    </section>
-  </header>
+    // Fetch books from JSON
+    fetch("books.json")
+        .then(response => response.json())
+        .then(data => {
+            books = data;
+            filteredBooks = [...books];
+            populateFilters();
+            renderBooks();
+            renderPagination();
+        })
+        .catch(error => console.error("Error loading books:", error));
 
-<!--Library Section-->
-  <main id="library" class="library-section">
-    <h2>Our Collection</h2>
+    // Populate dropdown filters
+    function populateFilters() {
+        const genres = [...new Set(books.map(book => book.genre))].sort();
+        const ages = [...new Set(books.map(book => book.ageRating))].sort();
 
-    <section class="filters">
-      <form id="search-form">
-        <input type="text" id="search-input" placeholder="Search by title or author...">
-        <select id="genre-filter">
-  <option value="all">All Genres</option>
-</select>
+        genres.forEach(genre => {
+            const option = document.createElement("option");
+            option.value = genre;
+            option.textContent = genre;
+            genreFilter.appendChild(option);
+        });
 
-<select id="age-filter">
-  <option value="all">All Age Ratings</option>
-</select>
-        <!--Available Only Toggle-->
-    <label>
-      <input type="checkbox" id="available-only">Available Only
-    </label>
+        ages.forEach(age => {
+            const option = document.createElement("option");
+            option.value = age;
+            option.textContent = age;
+            ageFilter.appendChild(option);
+        });
+    }
 
-    <select id="sort-filter">
-      <option value="">Sort By</option>
-      <option value="title-asc">Title A-Z</option>
-      <option value="title-desc">Title Z-A</option>
-      <option value="author-asc">Author A-Z</option>
-      <option value="author-desc">Author Z-A</option>
-      <option value="copies-desc">Most Copies</option>
-      <option value="copies-asc">Fewest Copies</option>
-    </select>
-      <button type="submit">Apply</button>
-      </form>
-    </section>
+    // Render books for current page
+    function renderBooks() {
+        bookList.innerHTML = "";
 
-    <!-- Book Grid -->
-<div class="book-grid" id="book-grid">
-  <!-- JS will render book cards here -->
-</div>
+        const start = (currentPage - 1) * booksPerPage;
+        const end = start + booksPerPage;
+        const pageBooks = filteredBooks.slice(start, end);
 
+        if (pageBooks.length === 0) {
+            bookList.innerHTML = "<p>No books found.</p>";
+            return;
+        }
 
-    <!-- Pagination -->
-    <div class="pagination">
-  <button class="prev-page">Previous</button>
-  <span class="page-numbers"></span>
-  <button class="next-page">Next</button>
-</div>
-  </main>
+        pageBooks.forEach(book => {
+            const bookCard = document.createElement("div");
+            bookCard.classList.add("book-card");
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>&copy; 2025 Rainbow of Hope Library. All rights reserved.</p>
-  </footer>
+            bookCard.innerHTML = `
+                <img src="${book.cover}" alt="${book.title} cover" class="book-cover">
+                <h3 class="book-title">${book.title}</h3>
+                <p class="book-author">by ${book.author}</p>
+                <button class="expand-btn">View Details</button>
+                <div class="book-details" style="display: none;">
+                    <p><strong>Description:</strong> ${book.description}</p>
+                    <p><strong>Genre:</strong> ${book.genre}</p>
+                    <p><strong>Age Rating:</strong> ${book.ageRating}</p>
+                    <p><strong>Total Copies:</strong> ${book.totalCopies}</p>
+                    <p><strong>Available Copies:</strong> ${book.availableCopies}</p>
+                </div>
+            `;
 
-  <script src="script.js"></script>
-</body>
-</html>
+            // Toggle details
+            const expandBtn = bookCard.querySelector(".expand-btn");
+            const details = bookCard.querySelector(".book-details");
+            expandBtn.addEventListener("click", () => {
+                const isVisible = details.style.display === "block";
+                details.style.display = isVisible ? "none" : "block";
+                expandBtn.textContent = isVisible ? "View Details" : "Hide Details";
+            });
+
+            bookList.appendChild(bookCard);
+        });
+    }
+
+    // Render pagination controls
+    function renderPagination() {
+        pagination.innerHTML = "";
+        const pageCount = Math.ceil(filteredBooks.length / booksPerPage);
+
+        for (let i = 1; i <= pageCount; i++) {
+            const button = document.createElement("button");
+            button.textContent = i;
+            if (i === currentPage) button.classList.add("active");
+            button.addEventListener("click", () => {
+                currentPage = i;
+                renderBooks();
+                renderPagination();
+            });
+            pagination.appendChild(button);
+        }
+    }
+
+    // Search and filter
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedGenre = genreFilter.value;
+        const selectedAge = ageFilter.value;
+
+        filteredBooks = books.filter(book => {
+            const matchesSearch =
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm);
+            const matchesGenre = selectedGenre ? book.genre === selectedGenre : true;
+            const matchesAge = selectedAge ? book.ageRating === selectedAge : true;
+
+            return matchesSearch && matchesGenre && matchesAge;
+        });
+
+        currentPage = 1;
+        renderBooks();
+        renderPagination();
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    genreFilter.addEventListener("change", applyFilters);
+    ageFilter.addEventListener("change", applyFilters);
+});
