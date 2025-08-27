@@ -1,146 +1,85 @@
-// script.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rainbow of Hope Library</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-// DOM elements
-const booksContainer = document.getElementById("books-container");
-const searchInput = document.getElementById("search-input");
-const genreFilter = document.getElementById("genre-filter");
-const ageFilter = document.getElementById("age-filter");
-const prevPageBtn = document.getElementById("prev-page");
-const nextPageBtn = document.getElementById("next-page");
-const pageInfo = document.getElementById("page-info");
-
-// Pagination state
-let currentPage = 1;
-const booksPerPage = 8;
-
-// Data store
-let books = [];
-let filteredBooks = [];
-
-// Fetch books from JSON file
-async function loadBooks() {
-  try {
-    const response = await fetch("books.json"); // must be in same folder or change path
-    books = await response.json();
-    filteredBooks = books;
-    populateFilters();
-    renderBooks();
-  } catch (error) {
-    console.error("Error loading books:", error);
-  }
-}
-
-// Populate dropdown filters with unique values
-function populateFilters() {
-  const genres = [...new Set(books.map(book => book.genre))];
-  const ageRatings = [...new Set(books.map(book => book.ageRating))];
-
-  genres.forEach(genre => {
-    const option = document.createElement("option");
-    option.value = genre;
-    option.textContent = genre;
-    genreFilter.appendChild(option);
-  });
-
-  ageRatings.forEach(rating => {
-    const option = document.createElement("option");
-    option.value = rating;
-    option.textContent = rating;
-    ageFilter.appendChild(option);
-  });
-}
-
-// Render books to page
-function renderBooks() {
-  booksContainer.innerHTML = "";
-
-  const start = (currentPage - 1) * booksPerPage;
-  const end = start + booksPerPage;
-  const paginatedBooks = filteredBooks.slice(start, end);
-
-  if (paginatedBooks.length === 0) {
-    booksContainer.innerHTML = "<p>No books found.</p>";
-    return;
-  }
-
-  paginatedBooks.forEach(book => {
-    const bookCard = document.createElement("div");
-    bookCard.classList.add("book-card");
-
-    bookCard.innerHTML = `
-      <img src="${book.cover}" alt="${book.title} cover" class="book-cover">
-      <h3>${book.title}</h3>
-      <p><em>${book.author}</em></p>
-      <button class="expand-btn">Details</button>
-      <div class="book-details hidden">
-        <p><strong>Description:</strong> ${book.description}</p>
-        <p><strong>Genre:</strong> ${book.genre}</p>
-        <p><strong>Age Rating:</strong> ${book.ageRating}</p>
-        <p><strong>Copies in Library:</strong> ${book.copies}</p>
-        <p><strong>Available Copies:</strong> ${book.available}</p>
+<body>
+  <!--Hero Section-->
+  <header class="hero">
+    <nav class="navbar">
+      <div class="logo">
+        <h1>Rainbow of Hope: 5C Project</h1>
       </div>
-    `;
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Library</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
 
-    // Expand/collapse functionality
-    const expandBtn = bookCard.querySelector(".expand-btn");
-    const details = bookCard.querySelector(".book-details");
-    expandBtn.addEventListener("click", () => {
-      details.classList.toggle("hidden");
-      expandBtn.textContent = details.classList.contains("hidden") ? "Details" : "Hide";
-    });
+    <section class="hero-content">
+      <h2>Library</h2>
+      <p>Explore books at your own pace, wherever you are.</p>
+      <a href="#library" class="btn">Browse Books</a>
+    </section>
+  </header>
 
-    booksContainer.appendChild(bookCard);
-  });
+<!--Library Section-->
+  <main id="library" class="library-section">
+    <h2>Our Collection</h2>
 
-  updatePaginationControls();
-}
+    <section class="filters">
+      <form id="search-form">
+        <input type="text" id="search-input" placeholder="Search by title or author...">
+        <select id="genre-filter">
+  <option value="all">All Genres</option>
+</select>
 
-// Update pagination buttons
-function updatePaginationControls() {
-  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
-  pageInfo.textContent = `Page ${currentPage} of ${totalPages || 1}`;
-  prevPageBtn.disabled = currentPage === 1;
-  nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
-}
+<select id="age-filter">
+  <option value="all">All Age Ratings</option>
+</select>
+        <!--Available Only Toggle-->
+    <label>
+      <input type="checkbox" id="available-only">Available Only
+    </label>
 
-// Apply filters and search
-function applyFilters() {
-  const searchText = searchInput.value.toLowerCase();
-  const genre = genreFilter.value;
-  const age = ageFilter.value;
+    <select id="sort-filter">
+      <option value="">Sort By</option>
+      <option value="title-asc">Title A-Z</option>
+      <option value="title-desc">Title Z-A</option>
+      <option value="author-asc">Author A-Z</option>
+      <option value="author-desc">Author Z-A</option>
+      <option value="copies-desc">Most Copies</option>
+      <option value="copies-asc">Fewest Copies</option>
+    </select>
+      <button type="submit">Apply</button>
+      </form>
+    </section>
 
-  filteredBooks = books.filter(book => {
-    const matchesSearch =
-      book.title.toLowerCase().includes(searchText) ||
-      book.author.toLowerCase().includes(searchText);
+    <!-- Book Grid -->
+<div class="book-grid" id="book-grid">
+  <!-- JS will render book cards here -->
+</div>
 
-    const matchesGenre = genre === "all" || book.genre === genre;
-    const matchesAge = age === "all" || book.ageRating === age;
 
-    return matchesSearch && matchesGenre && matchesAge;
-  });
+    <!-- Pagination -->
+    <div class="pagination">
+  <button class="prev-page">Previous</button>
+  <span class="page-numbers"></span>
+  <button class="next-page">Next</button>
+</div>
+  </main>
 
-  currentPage = 1;
-  renderBooks();
-}
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 Rainbow of Hope Library. All rights reserved.</p>
+  </footer>
 
-// Event listeners
-searchInput.addEventListener("input", applyFilters);
-genreFilter.addEventListener("change", applyFilters);
-ageFilter.addEventListener("change", applyFilters);
-prevPageBtn.addEventListener("click", () => {
-  if (currentPage > 1) {
-    currentPage--;
-    renderBooks();
-  }
-});
-nextPageBtn.addEventListener("click", () => {
-  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderBooks();
-  }
-});
-
-// Initialize
-loadBooks();
+  <script src="script.js"></script>
+</body>
+</html>
