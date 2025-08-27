@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width-device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rainbow of Hope Library</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -35,28 +35,20 @@
 
     <section class="filters">
       <form id="search-form">
-        <input type="text" id="search-bar" placeholder="Search by title or author...">
+        <input type="text" id="search-input" placeholder="Search by title or author...">
         <select id="genre-filter">
-          <option value="">All Genres</option>
-          <option value="fiction">Fiction</option>
-          <option value="non-fiction">Non-Fiction</option>
-          <option value="fantasy">Fantasy</option>
-          <option value="mystery">Mystery</option>
-          <option value="biography">Biography</option>
-        </select>
-        <select id="age-filter">
-          <option value="">All Age Ratings</option>
-          <option value="children">Children</option>
-          <option value="12+">12+</option>
-          <option value="16+">16+</option>
-          <option value="18+">18+</option>
-        </select>
+  <option value="all">All Genres</option>
+</select>
+
+<select id="age-filter">
+  <option value="all">All Age Ratings</option>
+</select>
         <!--Available Only Toggle-->
     <label>
       <input type="checkbox" id="available-only">Available Only
     </label>
 
-    <select id="sort-filter>
+    <select id="sort-filter">
       <option value="">Sort By</option>
       <option value="title-asc">Title A-Z</option>
       <option value="title-desc">Title Z-A</option>
@@ -77,14 +69,10 @@
 
     <!-- Pagination -->
     <div class="pagination">
-      <button class="prev-page">Previous</button>
-      <span class="page-numbers">
-        <button class="page-number active">1</button>
-        <button class="page-number">2</button>
-        <button class="page-number">3</button>
-      </span>
-      <button class="next-page">Next</button>
-    </div>
+  <button class="prev-page">Previous</button>
+  <span class="page-numbers"></span>
+  <button class="next-page">Next</button>
+</div>
   </main>
 
   <!-- Footer -->
