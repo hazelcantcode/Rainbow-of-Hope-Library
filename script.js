@@ -129,3 +129,13 @@ document.addEventListener("DOMContentLoaded", () => {
     genreFilter.addEventListener("change", applyFilters);
     ageFilter.addEventListener("change", applyFilters);
 });
+
+// Fetch books from books.json
+fetch("books.json")
+  .then(response => response.json())
+  .then(data => {
+    books = data;
+    renderBooks(books);
+    populateFilters(books);
+  })
+  .catch(err => console.error("Error loading books:", err));
